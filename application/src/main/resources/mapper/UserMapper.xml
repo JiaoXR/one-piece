@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jaxer.onepiece.application.repositories.UserMapper">
+    <resultMap id="AllDataMap" type="com.jaxer.onepiece.application.domain.entity.User">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="en_name" jdbcType="VARCHAR" property="enName"/>
+        <result column="nickname" jdbcType="VARCHAR" property="nickname"/>
+        <result column="age" jdbcType="TINYINT" property="age"/>
+        <result column="created_at" jdbcType="TIMESTAMP" property="createdAt"/>
+        <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt"/>
+    </resultMap>
+
+    <sql id="all_column">
+        id, name, en_name, nickname, age, created_at, updated_at
+    </sql>
+
+    <sql id="insert_columns">
+        name, en_name, nickname, age
+    </sql>
+
+    <insert id="insert" parameterType="com.jaxer.onepiece.application.domain.entity.User" useGeneratedKeys="true"
+            keyProperty="id">
+        <!--    这种方式也可以    -->
+        <!--        <selectKey resultType="long" keyProperty="id" order="AFTER">-->
+        <!--            select @@IDENTITY as id-->
+        <!--            SELECT LAST_INSERT_ID()-->
+        <!--        </selectKey>-->
+        INSERT INTO
+        user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">
+                name,
+            </if>
+            <if test="enName != null">
+                en_name,
+            </if>
+            <if test="nickname != null">
+                nickname,
+            </if>
+            <if test="age != null">
+                age,
+            </if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="enName != null">
+                #{enName,jdbcType=VARCHAR},
+            </if>
+            <if test="nickname != null">
+                #{nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="age != null">
+                #{age,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="findById" resultMap="AllDataMap">
+        SELECT
+        <include refid="all_column"/>
+        FROM
+        user
+        WHERE id = #{id}
+    </select>
+
+    <insert id="batchInsert" parameterType="list">
+        INSERT INTO user(
+        <include refid="insert_columns"/>)
+        VALUES
+        <foreach collection="list" item="record" index="index" separator=",">
+            (
+            #{record.name}, #{record.enName}, #{record.nickname},#{record.age}
+            )
+        </foreach>
+    </insert>
+</mapper>

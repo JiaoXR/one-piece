@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 读取spring配置-->
+    <springProperty scope="context" name="APP_NAME" source="spring.application.name" defaultValue="dispatch"/>
+    <springProperty scope="context" name="MAX_HISTORY" source="logging.file.max-history" defaultValue="30"/>
+    <springProperty scope="context" name="POD_NAME" source="PODNAME" defaultValue="${APP_NAME}"/>
+
+    <!-- 导入追踪信息 -->
+    <include resource="./TRACER_INFO.xml"/>
+    <!-- 导入统一日志格式 -->
+    <include resource="./LOG_PATTERN.xml"/>
+
+    <!-- 日志存放地址  -->
+    <property name="LOG_FILE" value="~/logs/${APP_NAME}/${POD_NAME}.log"/>
+    <property name="HISTORY_LOG_FILE" value="~/logs/${APP_NAME}/${POD_NAME}.%d{yyyy-MM-dd}.log"/>
+
+    <!-- 开发环境 -->
+    <springProfile name="local,unittest">
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>${LOG_PATTERN}</pattern>
+                <charset>utf8</charset>
+            </encoder>
+        </appender>
+        <logger name="cn.one-piece" level="TRACE"/>
+        <root level="info">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <!-- 其他环境 -->
+    <!-- 开发环境, QA test, pre, prod -->
+    <springProfile name="dev,test,pre,prod,local">
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>${LOG_PATTERN}</pattern>
+                <charset>utf8</charset>
+            </encoder>
+        </appender>
+        <!-- 每天产生一个文件 -->
+        <appender name="FILE-LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <!-- 文件路径 -->
+            <File>${LOG_FILE}</File>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <!-- 文件名称 -->
+                <fileNamePattern>${HISTORY_LOG_FILE}</fileNamePattern>
+                <!-- 文件最大保存历史数量 -->
+                <MaxHistory>${MAX_HISTORY}</MaxHistory>
+            </rollingPolicy>
+            <layout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>${LOG_PATTERN}</pattern>
+            </layout>
+        </appender>
+        <root level="info">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE-LOG"/>
+        </root>
+    </springProfile>
+
+</configuration>

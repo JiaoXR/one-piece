@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+    <conversionRule conversionWord="wex"
+                    converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
+    <conversionRule conversionWord="wEx"
+                    converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
+
+    <property name="LOG_PATTERN"
+              value="%clr(%d{yyyy-MM-dd}){faint} %clr(%d{HH:mm:ss}){cyan}%clr(%d{.SSS}){faint} %clr(%-5level) %clr(${TRACER_INFO:--}) %clr(${PID:- }) [%7.14t] %clr(%logger{30}:%3.4line){cyan} %clr(:) %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+
+</included>
